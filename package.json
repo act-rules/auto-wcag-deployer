@@ -9,9 +9,10 @@
   "scripts": {
     "start": "node index.js",
     "test": "node test.js",
-    "deploy": "cd _dump/auto-wcag && npm run build"
+    "gh-pages-build": "cd _dump/auto-wcag && npm run build"
   },
   "dependencies": {
+    "body-parser": "^1.18.2",
     "ejs": "^2.5.6",
     "express": "^4.15.2",
     "gh-pages": "^1.1.0",

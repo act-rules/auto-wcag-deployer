@@ -1,3 +1,7 @@
 .app {
   
 }
+
+.app .jumbotron {
+    text-align: center;
+}

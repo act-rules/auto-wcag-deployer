@@ -1,22 +1,50 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <% include ../partials/header.ejs %>
 </head>
 
 <body class='app'>
 
-  <div class="jumbotron text-center">
-    <div class="container">
-      Auto-Wcag Deployer
-    </div>
+  <div class="jumbotron">
+    <h1>Auto-Wcag Deployer</h1>
+    <p>A deployer, that manages the static site generation for
+      <a href="https://github.com/auto-wcag/auto-wcag" role="button">auto-wcag</a>. The Generated site is available
+      <a class="" href="https://auto-wcag.github.io/auto-wcag/" role="button">here</a>.
+    </p>
   </div>
   <div class="container">
-    <button class='btn' id='gh-pages-deploy-btn'>
-      Deploy gh-pages
-    </button>
+
+    <div class="row">
+      <div class="col-lg-5">
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon" id="from-branch-name">From Branch:</span>
+          <input type="text" class="form-control" placeholder="from branch" aria-describedby="from-branch-name" value="master" id='from-branch-input'>
+        </div>
+
+      </div>
+
+      <div class="col-lg-5">
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon" id="to-branch-name">To Branch:</span>
+          <input type="text" class="form-control" placeholder="to branch" aria-describedby="to-branch-name" value='gh-pages' id='to-branch-input'>
+        </div>
+      </div>
+
+      <div class="col-lg-2">
+        <button class='btn btn-primary btn-block btn-lg' id='deploy-btn'>
+          Deploy
+        </button>
+      </div>
+    </div>
+
+    <div class="row" id="deploy-logs">
+
+    </div>
   </div>
 
   <% include ../partials/scripts.ejs %>
 </body>
+
 </html>
