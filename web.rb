@@ -1,18 +1,98 @@
-require 'sinatra'
-require 'json'
+require "sinatra"
+require "json"
+require "fileutils"
+require "git"
+require 'uri'
 
+CONFIG = {
+  "WEBHOOK_REF" => "refs/heads/master",
+  "GIT_REPO_URI" => "https://github.com/auto-wcag/auto-wcag.git",
+  "GIT_REPO_NAME" => "auto-wcag",
+  "GIT_REPO_BRANCH_MASTER" => "master",
+  "GIT_REPO_BRANCH_GH_PAGES" => "gh-pages",
+  "DIR_TMP" => "_tmp",
+  "DIR_REPO" => "_tmp/auto-wcag"
+}
 # SECRET_TOKEN = ''
 
-get '/' do
-  'Auto WCAG Deployer: Which listens to GitHub Webhook to rebuild gh-pages.'
+get "/" do
+  "Auto WCAG Deployer: Which listens to GitHub Webhook to rebuild gh-pages."
 end
 
-post '/deploy' do
+post "/deploy" do
+
   request.body.rewind
-  payload_body = request.body.read
-  # verify_signature(payload_body)
-  push = JSON.parse(params[:payload])
-  "Payload: #{push.inspect}!"
+  body = request.body.read
+
+  #  TODO: verify_signature(payload_body)
+  
+  data = JSON.parse body
+
+  def clone_repo(gitUri, branchName, destDir)
+    puts "log: cloning: #{gitUri}, branch #{branchName}"
+    u = URI(gitUri)
+    project_name = u.path.split('/').last
+    directory_name = project_name.split('.').first + "-#{branchName}"
+    Dir.chdir(destDir)
+    unless File.directory?("./#{directory_name}")  
+      system("git clone --branch #{branchName} #{gitUri} #{directory_name}")
+    end
+    cloned_dir = destDir + "/#{directory_name}"
+    cloned_dir
+  end
+
+  def clean_dir(dir)
+    puts "log: clean dir #{dir}"
+    FileUtils.rm_rf Dir.glob("#{dir}/*")
+  end
+
+  if(data && data["ref"] && data["ref"] == CONFIG["WEBHOOK_REF"])
+
+    puts "log: webhook for master branch"
+
+    # Clean the tmp directory
+    tmp_dir = __dir__ + "/" + CONFIG['DIR_TMP']
+    clean_dir(tmp_dir)
+
+
+    # Clone gh-pages branch
+    
+    cloned_gh_pages_dir = clone_repo(CONFIG["GIT_REPO_URI"], CONFIG["GIT_REPO_BRANCH_GH_PAGES"], tmp_dir)
+    
+    # Clone master branch
+    puts "log: cloing master branch"
+    cloned_master_dir = clone_repo(CONFIG["GIT_REPO_URI"], CONFIG["GIT_REPO_BRANCH_MASTER"], tmp_dir)
+    puts cloned_master_dir
+    Dir.chdir(cloned_master_dir)
+    
+    # Generating site from master branch
+    puts "log: generating static site"   
+    system "gem install bundler"
+    system "bundle install" 
+    system "bundle exec jekyll build"
+
+    # Copy generated site to gh-pages directory
+    FileUtils.cp_r "#{cloned_master_dir}/_site", "#{cloned_gh_pages_dir}"
+
+    # push updated site to gh-pages branch
+    Dir.chdir(cloned_gh_pages_dir)
+    system "git status"
+    system "git add ."
+    system "git commit -m 'Re-generated static site' "
+    system "git push"
+
+    # Clean tmp dir
+    clean_dir(tmp_dir)
+
+    "Completed!!!"
+  else
+    
+    "Webhook triggered for non master branch, and for ref: #{data['ref']}. Ignoring re-build for gh-pages."
+
+  end
+
+ 
+  
 end
 
 # def verify_signature(payload_body)
