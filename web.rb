@@ -55,9 +55,7 @@ post "/deploy" do
 
     puts "log: webhook for master branch"
 
-    # git defaults
-    system "git config user.email 'jey.nandakumar@gmail.com' "
-    system "git config user.name 'jkodu' "
+   
 
     # Make tmp directory
     puts Dir.pwd
@@ -89,6 +87,9 @@ post "/deploy" do
 
     # push updated site to gh-pages branch
     Dir.chdir(cloned_gh_pages_dir)
+     # git defaults
+    system "git config --global user.email 'jey.nandakumar@gmail.com' "
+    system "git config --global user.name 'jkodu' "
     system "git status"
     system "git add ."
     system "git commit -m 'Re-generated static site' "
