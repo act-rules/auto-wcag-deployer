@@ -1,1 +1,1 @@
-web: gem install bundler && bundle exec puma -C config/puma.rb
+web: bundle exec ruby web.rb -p $PORT
