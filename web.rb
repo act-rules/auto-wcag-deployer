@@ -5,7 +5,8 @@ get '/' do
   'Auto WCAG Deployer'
 end
 
-post '/deployer' do
-  push = JSON.parse(request.body)
-  puts "Payload: #{push}"
+post '/api' do
+  request.body.rewind
+  data = JSON.parse request.body.read
+  "Hello #{data}!"
 end
