@@ -10,8 +10,7 @@ CONFIG = {
   "GIT_REPO_NAME" => "auto-wcag",
   "GIT_REPO_BRANCH_MASTER" => "master",
   "GIT_REPO_BRANCH_GH_PAGES" => "gh-pages",
-  "DIR_TMP" => "_tmp",
-  "DIR_REPO" => "_tmp/auto-wcag"
+  "DIR_TMP" => "tmp"
 }
 # SECRET_TOKEN = ''
 
@@ -41,6 +40,12 @@ post "/deploy" do
     cloned_dir
   end
 
+
+  def remove_dir(dir)
+    puts "log: remove dir #{dir}"
+    FileUtils.rm_rf Dir.glob("#{dir}")
+  end
+
   def clean_dir(dir)
     puts "log: clean dir #{dir}"
     FileUtils.rm_rf Dir.glob("#{dir}/*")
@@ -49,6 +54,10 @@ post "/deploy" do
   if(data && data["ref"] && data["ref"] == CONFIG["WEBHOOK_REF"])
 
     puts "log: webhook for master branch"
+
+    # Make tmp directory
+    puts Dir.pwd
+    system ("mkdir #{CONFIG['DIR_TMP']}")
 
     # Clean the tmp directory
     tmp_dir = __dir__ + "/" + CONFIG['DIR_TMP']
@@ -84,7 +93,13 @@ post "/deploy" do
     # Clean tmp dir
     clean_dir(tmp_dir)
 
-    "Completed!!!"
+    # Remove tmp dir
+    remove_dir(tmp_dir)
+
+    # return
+    result = "Completed!!!"
+    puts result
+    result
   else
     
     "Webhook triggered for non master branch, and for ref: #{data['ref']}. Ignoring re-build for gh-pages."
