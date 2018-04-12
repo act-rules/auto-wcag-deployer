@@ -55,6 +55,10 @@ post "/deploy" do
 
     puts "log: webhook for master branch"
 
+    # git defaults
+    system "git config user.email 'jey.nandakumar@gmail.com' "
+    system "git config user.name 'jkodu' "
+
     # Make tmp directory
     puts Dir.pwd
     system ("mkdir #{CONFIG['DIR_TMP']}")
