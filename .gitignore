@@ -58,3 +58,4 @@ typings/
 .env
 
 _dump/*
+_nodejs_backup/_dump/*
