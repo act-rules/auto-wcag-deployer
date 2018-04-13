@@ -14,7 +14,7 @@ CONFIG = {
 }
 
 get "/" do
-  "Auto WCAG Deployer: Which listens to GitHub Webhook to rebuild gh-pages."
+  body "Auto WCAG Deployer: Which listens to GitHub Webhook to rebuild gh-pages."
 end
 
 post "/deploy" do
@@ -39,7 +39,6 @@ post "/deploy" do
     cloned_dir
   end
 
-
   def remove_dir(dir)
     puts "log: remove dir #{dir}"
     FileUtils.rm_rf Dir.glob("#{dir}")
@@ -50,34 +49,15 @@ post "/deploy" do
     FileUtils.rm_rf Dir.glob("#{dir}/*")
   end
 
-  def copy_folder_contents(fromDir, toDir, ignoreFiles)
-    contains = Dir.new(fromDir).entries
-
-    def copy_with_path(src, dst)
-      FileUtils.mkdir_p(File.dirname(dst))
-      FileUtils.cp(src, dst)
-    end
-
-    Dir[fromDir + "/**/*.*"].each do |old_dest| 
-      new_dest = old_dest.gsub(fromDir, toDir)
-
-      # puts new_dest
-      should_not_copy = ignoreFiles.any? { |s| new_dest.end_with?(s) }
-
-      if !should_not_copy
-        puts new_dest
-        copy_with_path(old_dest, new_dest);
-      end
-    end
-  end
-
   if(data && data["ref"] && data["ref"] == CONFIG["GIT_WEBHOOK_REF"])
 
-    puts "log: webhook for master branch"
+    returnValue =  "log: webhook for master branch"
+    puts returnValue
+    status 200
+    body returnValue
 
-    # Set Git Defaults
-    system "git config --global user.email '#{ENV['GIT_EMAIL']}' "
-    system "git config --global user.name '#{ENV['GIT_USERNAME']}' "
+    # base dir
+    base_dir = __dir__
 
     # Make tmp directory
     puts Dir.pwd
@@ -87,9 +67,7 @@ post "/deploy" do
     tmp_dir = __dir__ + "/" + CONFIG['DIR_TMP']
     clean_dir(tmp_dir)
 
-
     # Clone gh-pages branch
-    
     cloned_gh_pages_dir = clone_repo(CONFIG["GIT_REPO_URI"], CONFIG["GIT_REPO_BRANCH_GH_PAGES"], tmp_dir)
     
     # Clone master branch
@@ -118,6 +96,9 @@ post "/deploy" do
     system "git commit -m 'Re-generated static site' "
     system "git push -ff" # May be look into not doing a forced update.
  
+    # Change working dir to root.
+    Dir.chdir(base_dir)
+
     # Clean tmp dir
     clean_dir(tmp_dir)
 
@@ -127,15 +108,13 @@ post "/deploy" do
     # return
     result = "Completed!!!"
     puts result
-    result
   else
-    
-    "Webhook triggered for non master branch, and for ref: #{data['ref']}. Ignoring re-build for gh-pages."
-
+    returnValue =  "Webhook triggered for non master branch, and for ref: #{data['ref']}. Ignoring re-build for gh-pages."
+    puts returnValue
+    status 200
+    body returnValue
   end
 
- 
-  
 end
 
 # def verify_signature(payload_body)
