@@ -107,22 +107,22 @@ post "/deploy" do
     # reset gh-pages to previous commit & update
     Dir.chdir(cloned_gh_pages_dir)
     system "git reset HEAD~1" # This triggers a re-build of gh-pages
-    system "git pull"
 
     # Copy generated site to gh-pages directory
     puts "log: copying contents"
     FileUtils.cp_r "#{cloned_master_dir}/_site/.", ".", :verbose => true
     
     # Add and commit changes
-    # system "git add ."
-    # system "git commit -m 'Re-generated static site' "
-    # system "git push -ff"
+    system "git status"
+    system "git add ."
+    system "git commit -m 'Re-generated static site' "
+    system "git push -ff" # May be look into not doing a forced update.
  
     # Clean tmp dir
-    # clean_dir(tmp_dir)
+    clean_dir(tmp_dir)
 
     # Remove tmp dir
-    # remove_dir(tmp_dir)
+    remove_dir(tmp_dir)
 
     # return
     result = "Completed!!!"
