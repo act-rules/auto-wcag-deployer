@@ -55,9 +55,9 @@ def run_deployer_in_background()
   background_pid = Process.fork do
 
     # global git config
-    git config --global user.email "jey.nandakumar@gmail.com"
-    git config --global user.name "jkodu"
-    git config --global push.default matching
+    system "git config --global user.email 'jey.nandakumar@gmail.com' "
+    system "git config --global user.name 'jkodu' "
+    system "git config --global push.default matching"
 
     # base dir
     base_dir = __dir__
