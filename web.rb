@@ -19,12 +19,12 @@ end
 
 post "/deploy" do
 
-  request.body.rewind
-  body = request.body.read
+  # begin - helper methods
 
-  #  TODO: verify_signature(payload_body)
-  
-  data = JSON.parse body
+  def verify_signature(payload_body)
+    signature = 'sha1=' + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), ENV['SECRET_TOKEN'], payload_body)
+    return halt 500, "Signatures didn't match!" unless Rack::Utils.secure_compare(signature, request.env['HTTP_X_HUB_SIGNATURE'])
+  end
 
   def clone_repo(gitUri, branchName, destDir)
     puts "log: cloning: #{gitUri}, branch #{branchName}"
@@ -49,13 +49,7 @@ post "/deploy" do
     FileUtils.rm_rf Dir.glob("#{dir}/*")
   end
 
-  if(data && data["ref"] && data["ref"] == CONFIG["GIT_WEBHOOK_REF"])
-
-    returnValue =  "log: webhook for master branch"
-    puts returnValue
-    status 200
-    body returnValue
-
+  background_pid = Process.fork do
     # base dir
     base_dir = __dir__
 
@@ -108,16 +102,30 @@ post "/deploy" do
     # return
     result = "Completed!!!"
     puts result
-  else
-    returnValue =  "Webhook triggered for non master branch, and for ref: #{data['ref']}. Ignoring re-build for gh-pages."
-    puts returnValue
-    status 200
-    body returnValue
+
+    Process.exit
   end
 
-end
+  # end - helper methods
 
-# def verify_signature(payload_body)
-#   signature = 'sha1=' + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), ENV['SECRET_TOKEN'], payload_body)
-#   return halt 500, "Signatures didn't match!" unless Rack::Utils.secure_compare(signature, request.env['HTTP_X_HUB_SIGNATURE'])
-# end
+  # implemention
+  STDOUT.sync = true
+  request.body.rewind
+  body = request.body.read
+  #  TODO: verify_signature(payload_body)
+  data = JSON.parse body
+  
+  returnValue = nil
+
+  if(data && data["ref"] && data["ref"] == CONFIG["GIT_WEBHOOK_REF"])
+    Process.detach background_pid
+    returnValue =  "log: webhook for master branch - executing in background thread - check https://dashboard.heroku.com/apps/secret-sea-89054/logs for updates."
+  else
+    returnValue =  "Webhook triggered for non master branch, and for ref: #{data['ref']}. Ignoring re-build for gh-pages."
+  end
+
+  puts returnValue
+  status 200
+  body returnValue
+
+end
