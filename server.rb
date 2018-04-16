@@ -26,16 +26,9 @@ def clone_repo(gitUri, branchName, destDir)
   directory_name = project_name.split('.').first + "-#{branchName}"
   Dir.chdir(destDir)
   unless File.directory?("./#{directory_name}")
-    system "git remote add origin #{gitUri}"
-    system ""
-
-    git remote add origin https://github.com/XXXX/YYY.git
-
-    git fetch 
-
-    # system "git clone --branch #{branchName} #{gitUri} #{directory_name}"
-    # system "git fetch"
-    # system "git pull"
+    system "git clone --branch #{branchName} #{gitUri} #{directory_name}"
+    system "git fetch"
+    system "git pull"
   end
   cloned_dir = destDir + "/#{directory_name}"
   cloned_dir
