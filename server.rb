@@ -25,10 +25,17 @@ def clone_repo(gitUri, branchName, destDir)
   project_name = u.path.split('/').last
   directory_name = project_name.split('.').first + "-#{branchName}"
   Dir.chdir(destDir)
-  unless File.directory?("./#{directory_name}")  
-    system "git clone --branch #{branchName} #{gitUri} #{directory_name}"
-    system "git fetch"
-    system "git pull"
+  unless File.directory?("./#{directory_name}")
+    system "git remote add origin #{gitUri}"
+    system ""
+
+    git remote add origin https://github.com/XXXX/YYY.git
+
+    git fetch 
+
+    # system "git clone --branch #{branchName} #{gitUri} #{directory_name}"
+    # system "git fetch"
+    # system "git pull"
   end
   cloned_dir = destDir + "/#{directory_name}"
   cloned_dir
@@ -46,6 +53,12 @@ end
 
 def run_deployer_in_background()
   background_pid = Process.fork do
+
+    # global git config
+    git config --global user.email "jey.nandakumar@gmail.com"
+    git config --global user.name "jkodu"
+    git config --global push.default matching
+
     # base dir
     base_dir = __dir__
 
