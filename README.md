@@ -9,7 +9,6 @@ Make sure you have [Ruby](https://www.ruby-lang.org), [Bundler](http://bundler.i
 
 ```sh
 git clone repo
-
 bundle
 heroku local
 ```
@@ -22,3 +21,8 @@ heroku create or use existing containers after login using heroku login
 git push heroku master
 heroku open
 ```
+
+## Running tests
+
+
+Foreman runs rspec in watch mode `bundle exec guard -i`, alternatively run `rspec`.
