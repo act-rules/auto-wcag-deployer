@@ -74,7 +74,6 @@ def run_deployer_in_background()
 
     # reset gh-pages to previous commit & update
     Dir.chdir(cloned_gh_pages_dir)
-    clean_dir(cloned_gh_pages_dir)
 
     # Copy generated site to gh-pages directory
     puts "log: copying contents"
