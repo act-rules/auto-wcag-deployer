@@ -82,12 +82,18 @@ def run_deployer_in_background()
 		Dir.chdir(cloned_gh_pages_dir)
 		
 		# remove any old test embed files
-		system "git status"
 		system "git rm -rf _draft-testcase-embeds/"
+		system "git status"
+		system "git add ."
 
     # Copy generated site to gh-pages directory
     puts "log: copying contents"
     FileUtils.cp_r "#{cloned_master_dir}/_site/.", ".", :verbose => true
+
+		# Add and commit changes
+		system "git status"
+		system "git add ."
+		system "ls"
 
     # Create a nojekyll file to prevent page build error
     system "touch .nojekyll"
