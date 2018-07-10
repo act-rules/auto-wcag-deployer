@@ -83,8 +83,9 @@ def run_deployer_in_background()
 		
 		# remove any old test embed files
 		system "git rm -rf _draft-testcase-embeds/"
-		system "git status"
 		system "git add ."
+		system "git commit -m 'chore: deprecate old test assets' "
+
 
     # Copy generated site to gh-pages directory
     puts "log: copying contents"
@@ -93,7 +94,6 @@ def run_deployer_in_background()
 		# Add and commit changes
 		system "git status"
 		system "git add ."
-		system "ls"
 
     # Create a nojekyll file to prevent page build error
     system "touch .nojekyll"
@@ -102,7 +102,7 @@ def run_deployer_in_background()
 		system "git status"
 		system "git add ."
 		
-    system "git commit -m 'Re-generated static site' "
+    system "git commit -m 'chire: re-generated static site' "
     system "git push" # May be look into not doing a forced update.
 
     # Change working dir to root.
