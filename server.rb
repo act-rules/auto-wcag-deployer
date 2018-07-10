@@ -79,7 +79,11 @@ def run_deployer_in_background()
     system "bundle exec jekyll build"
 
     # reset gh-pages to previous commit & update
-    Dir.chdir(cloned_gh_pages_dir)
+		Dir.chdir(cloned_gh_pages_dir)
+		
+		# remove any old test embed files
+		system "git status"
+		system "git rm -rf _draft-testcase-embeds/"
 
     # Copy generated site to gh-pages directory
     puts "log: copying contents"
@@ -89,9 +93,6 @@ def run_deployer_in_background()
     system "touch .nojekyll"
     
     # Add and commit changes
-		system "git status"
-		system "git rm -rf _draft-testcase-embeds/*.*"
-
 		system "git status"
 		system "git add ."
 		
