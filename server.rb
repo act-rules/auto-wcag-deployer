@@ -89,8 +89,12 @@ def run_deployer_in_background()
     system "touch .nojekyll"
     
     # Add and commit changes
-    system "git status"
-    system "git add ."
+		system "git status"
+		system "git rm -rf _draft-testcase-embeds/*.*"
+
+		system "git status"
+		system "git add ."
+		
     system "git commit -m 'Re-generated static site' "
     system "git push" # May be look into not doing a forced update.
 
