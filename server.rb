@@ -70,7 +70,12 @@ def run_deployer_in_background()
     puts "log: cloing master branch"
     cloned_master_dir = clone_repo(CONFIG["GIT_REPO_URI"], CONFIG["GIT_REPO_BRANCH_MASTER"], tmp_dir)
     puts cloned_master_dir
-    Dir.chdir(cloned_master_dir)
+		Dir.chdir(cloned_master_dir)
+		
+		# Get test embed files directory from package json if exists
+		embeds_dir = JSON.parse(File.read('package.json'))['testcases-embeds-dir']
+		embeds_dir = embeds_dir !== nil ? embeds_dir : '_draft-testcase-embeds/'
+		puts "logging >> embeds directory from package json if exists:: #{embeds_dir}"
     
     # Generating site from master branch
     puts "log: generating static site"   
@@ -80,9 +85,9 @@ def run_deployer_in_background()
 
     # reset gh-pages to previous commit & update
 		Dir.chdir(cloned_gh_pages_dir)
-		
+
 		# remove any old test embed files
-		system "git rm -rf _draft-testcase-embeds/"
+		system "git rm -rf #{embeds_dir}"
 		system "git add ."
 		system "git commit -m 'chore: deprecate old test assets' "
 
