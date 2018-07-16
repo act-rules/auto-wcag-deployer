@@ -74,7 +74,6 @@ def run_deployer_in_background()
 		
 		# Get test embed files directory from package json if exists
 		embeds_dir = JSON.parse(File.read('package.json'))['testcases-embeds-dir']
-		embeds_dir = embeds_dir !== nil ? embeds_dir : '_draft-testcase-embeds/'
 		puts "logging >> embeds directory from package json if exists:: #{embeds_dir}"
     
     # Generating site from master branch
