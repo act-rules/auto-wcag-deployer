@@ -75,7 +75,10 @@ def run_deployer_in_background()
 		# Get test embed files directory from package json if exists
 		embeds_dir = JSON.parse(File.read('package.json'))['testcases-embeds-dir']
 		puts "logging >> embeds directory from package json if exists:: #{embeds_dir}"
-    
+
+		exports_dir = JSON.parse(File.read('package.json'))['testcases-export-dir']
+		puts "logging >> exports directory from package json if exists:: #{exports_dir}"
+
     # Generating site from master branch
     puts "log: generating static site"   
     system "gem install bundler"
@@ -87,9 +90,9 @@ def run_deployer_in_background()
 
 		# remove any old test embed files
 		system "git rm -rf #{embeds_dir}"
+		system "git rm -rf #{exports_dir}"
 		system "git add ."
-		system "git commit -m 'chore: deprecate old test assets' "
-
+		system "git commit -m 'chore: deprecate old test assets and exports' "
 
     # Copy generated site to gh-pages directory
     puts "log: copying contents"
