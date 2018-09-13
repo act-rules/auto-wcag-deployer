@@ -3,6 +3,7 @@ require "json"
 require "fileutils"
 require "git"
 require 'uri'
+require 'zip'
 
 CONFIG = {
   "GIT_WEBHOOK_REF" => "refs/heads/master",
