@@ -1,3 +1,6 @@
+**Note: This project's usages are deprecated and is not under active development**
+
+
 # aut-wcag-deployer
 
 Auto WCAG Deployer: Which listens to GitHub Webhook to rebuild gh-pages.
